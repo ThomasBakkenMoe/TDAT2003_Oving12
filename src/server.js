@@ -2,8 +2,10 @@ var express = require('express');
 var mysql = require("mysql");
 var bodyParser = require("body-parser");
 var app = express();
+var cors = require('cors');
 
 app.use(bodyParser.json()); //Brukes til å tolke JSON
+app.use(cors());
 
 var pool = mysql.createPool({
    connectionLimit: 2,

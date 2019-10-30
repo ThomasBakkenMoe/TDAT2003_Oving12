@@ -56,9 +56,9 @@ let courses = [
 class Menu extends Component {
   render() {
     return (
-      <NavBar brand="React example">
-        <NavBar.Link to="/students">Students</NavBar.Link>
-          <NavBar.Link to="/courses">Courses</NavBar.Link>
+      <NavBar brand="Pixel Vault">
+        <NavBar.Link to="/students">Browse</NavBar.Link>
+          <NavBar.Link to="/courses">Submit</NavBar.Link>
       </NavBar>
     );
   }
@@ -67,7 +67,7 @@ class Menu extends Component {
 class Home extends Component {
   render() {
     return (
-      <Card title="React example with component state">Client-server communication will be covered next week.</Card>
+      <Card title="Welcome to The Pixel Vault!">The home of only the best browsable wallpapers</Card>
     );
   }
 }
@@ -436,23 +436,30 @@ class CourseAdd extends Component<{ match: { params: { code: string } } }> {
         history.push('/courses/' + this.code);
     }
 }
-class PersonList extends Component {
-    state = {
-        persons: []
+class ArticleList extends Component {
+
+    articles = []
+
+    constructor(props){
+        super(props);
+
+        console.log("Constructed!")
+        axios.get(`http://localhost:4000/articles`)
+            .then(response => {
+                const articlesFromDatabase = response.data;
+                console.log("data: " + response.data)
+                this.articles = articlesFromDatabase;
+            })
     }
 
-    componentDidMount() {
-        axios.get(`https://localhost:4000`)
-            .then(res => {
-                const persons = res.data;
-                this.setState({ persons });
-            })
+    mounted() {
+
     }
 
     render() {
         return (
             <ul>
-                { this.state.persons.map(person => <li>{person.name}</li>)}
+                { this.articles.map(article => <li>{article.content}</li>)}
             </ul>
         )
     }
@@ -475,6 +482,7 @@ if (root)
           <Route exact path="/courses/:code" component={CourseDetails}/>
           <Route exact path="/courses/:code/edit" component={CourseEdit} />
           <Route exact path="/courses/1/add" component={CourseAdd}/>
+          <ArticleList/>
 
       </div>
     </HashRouter>,
