@@ -57,8 +57,8 @@ class Menu extends Component {
   render() {
     return (
       <NavBar brand="Pixel Vault">
-        <NavBar.Link to="/students">Browse</NavBar.Link>
-          <NavBar.Link to="/courses">Submit</NavBar.Link>
+        <NavBar.Link to="/browse">Browse</NavBar.Link>
+          <NavBar.Link to="/submit">Submit</NavBar.Link>
       </NavBar>
     );
   }
@@ -72,378 +72,11 @@ class Home extends Component {
   }
 }
 
-class StudentList extends Component {
-  render() {
-    return (
-      <Card title="Students">
-        {students.map(student => (
-          <Row key={student.id}>
-            <Column width={2}>
-              <NavLink activeStyle={{ color: 'darkblue' }} exact to={'/students/' + student.id}>
-                {student.firstName} {student.lastName}
-              </NavLink>
-            </Column>
-            <Column>
-              <NavLink activeStyle={{ color: 'darkblue' }} to={'/students/' + student.id + '/edit'}>
-                edit
-              </NavLink>
-            </Column>
-          </Row>
-        ))}
-        <Button.Primary onClick={
-            () => {
-                history.push("/students/1/add");
-            }
-        }>Add student</Button.Primary>
-      </Card>
-    );
-  }
-}
+class Browse extends Component{
 
-class StudentDetails extends Component<{ match: { params: { id: number } } }> {
-  render() {
-    let student = students.find(student => student.id == this.props.match.params.id);
-    if (!student) {
-      Alert.danger('Student not found: ' + this.props.match.params.id);
-      return null; // Return empty object (nothing to render)
-    }
-    return (
-      <Card title="Details">
-        <Row>
-          <Column width={2}>First name</Column>
-          <Column>{student.firstName}</Column>
-        </Row>
-        <Row>
-          <Column width={2}>Last name</Column>
-          <Column>{student.lastName}</Column>
-        </Row>
-        <Row>
-          <Column width={2}>Email</Column>
-          <Column>{student.email}</Column>
-        </Row>
-      </Card>
-    );
-  }
-}
+    articles = [];
 
-class StudentEdit extends Component<{ match: { params: { id: number } } }> {
-  firstName = ''; // Always initialize component member variables
-  lastName = '';
-  email = '';
-
-  render() {
-    return (
-      <Card title="Edit">
-        <form>
-          <Row>
-            <Column width={2}>First name</Column>
-            <Column>
-              <input
-                type="text"
-                value={this.firstName}
-                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.firstName = event.target.value)}
-              />
-            </Column>
-          </Row>
-          <Row>
-            <Column width={2}>Last name</Column>
-            <Column>
-              <input
-                type="text"
-                value={this.lastName}
-                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.lastName = event.target.value)}
-              />
-            </Column>
-          </Row>
-          <Row>
-            <Column width={2}>Email</Column>
-            <Column>
-              <input
-                type="text"
-                value={this.email}
-                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.email = event.target.value)}
-              />
-            </Column>
-          </Row>
-          <Button.Danger onClick={this.save}>Save</Button.Danger>
-        </form>
-      </Card>
-    );
-  }
-
-  // Initialize component state (firstName, lastName, email) when the component has been inserted into the DOM (mounted)
-  mounted() {
-    let student = students.find(student => student.id == this.props.match.params.id);
-    if (!student) {
-      Alert.danger('Student not found: ' + this.props.match.params.id);
-      return;
-    }
-
-    this.firstName = student.firstName;
-    this.lastName = student.lastName;
-    this.email = student.email;
-  }
-
-  save() {
-    let student = students.find(student => student.id == this.props.match.params.id);
-    if (!student) {
-      Alert.danger('Student not found: ' + this.props.match.params.id);
-      return;
-    }
-
-    student.firstName = this.firstName;
-    student.lastName = this.lastName;
-    student.email = this.email;
-
-    // Go to StudentDetails after successful save
-    history.push('/students/' + student.id);
-  }
-}
-
-class StudentAdd extends Component<{ match: { params: { code: string } } }> {
-    firstName = ''; // Always initialize component member variables
-    lastName = '';
-    email = '';
-
-    render() {
-        return (
-            <Card title="Add student">
-                <form>
-                    <Row>
-                        <Column width={2}>First name</Column>
-                        <Column>
-                            <input
-                                type="text"
-                                value={this.firstName}
-                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.firstName = event.target.value)}
-                            />
-                        </Column>
-                    </Row>
-                    <Row>
-                        <Column width={2}>Last name</Column>
-                        <Column>
-                            <input
-                                type="text"
-                                value={this.lastName}
-                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.lastName = event.target.value)}
-                            />
-                        </Column>
-                    </Row>
-                    <Row>
-                        <Column width={2}>Email</Column>
-                        <Column>
-                            <input
-                                type="text"
-                                value={this.email}
-                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.email = event.target.value)}
-                            />
-                        </Column>
-                    </Row>
-                    <Button.Danger onClick={this.save}>Save</Button.Danger>
-                </form>
-            </Card>
-        );
-    }
-
-    save() {
-        if (this.firstName === '' || this.lastName === '' || this.email === ''){
-            Alert.danger('Student must have a valid first name, last name and email: ');
-            return;
-        }
-
-        let newStudent = new Student(this.firstName, this.lastName, this.email);
-
-        students.push(newStudent);
-
-        Alert.info('Student added')
-
-        // Go to StudentDetails after successful save
-        history.push('/students/' + newStudent.id);
-    }
-}
-
-class CourseList extends Component{
-    render() {
-        return (
-            <Card title="Courses">
-                {courses.map(course => (
-                    <Row key={course.code}>
-                        <Column width={2}>
-                            <NavLink activeStyle={{ color: 'darkblue' }} to={'/courses/' + course.code}>
-                                {course.code} {course.title}
-                            </NavLink>
-                        </Column>
-                        <Column>
-                            <NavLink activeStyle={{ color: 'darkblue' }} to={'/courses/' + course.code + '/edit'}>
-                                edit
-                            </NavLink>
-                        </Column>
-                    </Row>
-                ))}
-                <Button.Primary onClick={
-                    () => {
-                        history.push('/courses/1/add');
-                    }
-                }>Add course</Button.Primary>
-            </Card>
-        );
-    }
-}
-
-class CourseDetails extends Component<{ match: { params: { code: string } } }> {
-    render() {
-        let course = courses.find(course => course.code === this.props.match.params.code);
-        if (!course) {
-            Alert.danger('Course not found: ' + this.props.match.params.code);
-            return null; // Return empty object (nothing to render)
-        }
-        return (
-            <Card title="Course details">
-                <Row>
-                    <Column width={2}>Course code:</Column>
-                    <Column>{course.code}</Column>
-                </Row>
-                <Row>
-                    <Column width={2}>Course title:</Column>
-                    <Column>{course.title}</Column>
-                </Row>
-                <Row>
-                    <ul>
-                        <li>Påmeldte studenter:
-                            <ul>
-                                {course.students.map(student => (
-                                    <li key={student.id}>
-                                        <NavLink activeStyle={{ color: 'darkblue' }} to={'/students/' + student.id}>
-                                            {student.firstName} {student.lastName}
-                                        </NavLink>
-                                    </li>
-                                ))}
-                            </ul>
-                        </li>
-                    </ul>
-                </Row>
-            </Card>
-        );
-    }
-}
-
-class CourseEdit extends Component<{ match: { params: { code: string } } }> {
-    code = ''; // Always initialize component member variables
-    title = '';
-
-    render() {
-        return (
-            <Card title="Edit">
-                <form>
-                    <Row>
-                        <Column width={2}>Code</Column>
-                        <Column>
-                            <input
-                                type="text"
-                                value={this.code}
-                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.code = event.target.value)}
-                            />
-                        </Column>
-                    </Row>
-                    <Row>
-                        <Column width={2}>Title</Column>
-                        <Column>
-                            <input
-                                type="text"
-                                value={this.title}
-                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.title = event.target.value)}
-                            />
-                        </Column>
-                    </Row>
-                    <Button.Danger onClick={this.save}>Save</Button.Danger>
-                </form>
-            </Card>
-        );
-    }
-
-    // Initialize component state (firstName, lastName, email) when the component has been inserted into the DOM (mounted)
     mounted() {
-        let course = courses.find(course => course.code == this.props.match.params.code);
-        if (!course) {
-            Alert.danger('Course not found: ' + this.props.match.params.code);
-            return;
-        }
-
-        this.code = course.code;
-        this.title = course.title;
-    }
-
-    save() {
-        let course = courses.find(course => course.code == this.props.match.params.code);
-        if (!course) {
-            Alert.danger('Course not found: ' + this.props.match.params.code);
-            return;
-        }
-
-        course.code = this.code;
-        course.title = this.title;
-
-        // Go to CourseDetails after successful save
-
-        Alert.info('Course added');
-        history.push('/courses/' + course.code);
-    }
-}
-
-class CourseAdd extends Component<{ match: { params: { code: string } } }> {
-    code = ''; // Always initialize component member variables
-    title = '';
-
-    render() {
-        return (
-            <Card title="Add course">
-                <form>
-                    <Row>
-                        <Column width={2}>Code</Column>
-                        <Column>
-                            <input
-                                type="text"
-                                value={this.code}
-                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.code = event.target.value)}
-                            />
-                        </Column>
-                    </Row>
-                    <Row>
-                        <Column width={2}>Title</Column>
-                        <Column>
-                            <input
-                                type="text"
-                                value={this.title}
-                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.title = event.target.value)}
-                            />
-                        </Column>
-                    </Row>
-                    <Button.Danger onClick={this.save}>Save</Button.Danger>
-                </form>
-            </Card>
-        );
-    }
-
-    save() {
-        if (this.code === '' || this.title === ''){
-            Alert.danger('Course must have a valid code and title: ');
-            return;
-        }
-
-        let course = courses.push(new Course(this.code, this.title, []));
-
-        // Go to CourseDetails after successful save
-        history.push('/courses/' + this.code);
-    }
-}
-class ArticleList extends Component {
-
-    articles = []
-
-    constructor(props){
-        super(props);
-
-        console.log("Constructed!")
         axios.get(`http://localhost:4000/articles`)
             .then(response => {
                 const articlesFromDatabase = response.data;
@@ -452,38 +85,74 @@ class ArticleList extends Component {
             })
     }
 
-    mounted() {
-
-    }
-
     render() {
         return (
-            <ul>
-                { this.articles.map(article => <li>{article.content}</li>)}
-            </ul>
+            this.articles.map(article => <a href={"/article/" + article.articleID}><Card title={""}><img src={article.image} alt="Logo" /></Card></a>)
         )
     }
 }
 
+class Submit extends Component{
+    image = '';
+
+    render() {
+        return (
+            <Card title="Submit a new image">
+                <form>
+                    <Row>
+                        <Column width={2}>imageURL</Column>
+                        <Column>
+                            <input
+                                type="text"
+                                value={this.image}
+                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.image = event.target.value)}
+                            />
+                        </Column>
+                    </Row>
+                    <Button.Danger onClick={this.save}>Save</Button.Danger>
+                </form>
+            </Card>
+        );
+    }
+
+    save() {
+
+        console.log(this.image);
+
+        let data = {
+            "headline": " ",
+            "content": " ",
+            "image": this.image,
+            "importance": 1,
+        };
+
+        if (this.image === ""){
+            Alert.danger('You must provide an image URL');
+            return;
+        }
+
+        axios.post(`http://localhost:4000/articles`, data).then(response => {
+            console.log(response);
+            console.log(response.data);
+        });
+
+        Alert.info('Image added')
+
+        // Go to StudentDetails after successful save
+        history.push('/browse');
+    }
+}
 
 const root = document.getElementById('root');
 if (root)
   ReactDOM.render(
     <HashRouter>
       <div>
-        <Alert />
-        <Menu />
-        <Route exact path="/" component={Home} />
-        <Route path="/students" component={StudentList} />
-        <Route exact path="/students/:id" component={StudentDetails} />
-        <Route exact path="/students/:id/edit" component={StudentEdit} />
-          <Route exact path="/students/1/add" component={StudentAdd}/>
-          <Route path="/courses" component={CourseList}/>
-          <Route exact path="/courses/:code" component={CourseDetails}/>
-          <Route exact path="/courses/:code/edit" component={CourseEdit} />
-          <Route exact path="/courses/1/add" component={CourseAdd}/>
-          <ArticleList/>
-
+          <Alert />
+          <Menu />
+          <Route exact path="/" component={Home} />
+          <Route path="/browse" component={Browse}/>
+          <Route exact path="/submit" component={Submit}/>
       </div>
     </HashRouter>,
     root

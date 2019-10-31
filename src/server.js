@@ -210,23 +210,6 @@ app.post("/articles", (request, response) => {
                   response.json({ error: "Feil ved insert"});
                }else{
                   console.log("insert ok");
-
-                  values = [request.body.headline, request.body.content, request.body.category];
-
-                  connection.query(
-                     "INSERT INTO Article_Category VALUES ((SELECT articleID FROM Articles WHERE headline = ? AND content = ?),?)", values,
-                     err => {
-                        connection.release();
-                        if(err){
-                           console.error(err);
-                           response.status(500);
-                           response.json({ error: "Feil ved insert"});
-                        }else{
-                           console.log("insert ok");
-                           response.status(200).send("");
-                        }
-                     }
-                  );
                }
             }
          );
