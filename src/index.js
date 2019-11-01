@@ -134,11 +134,12 @@ class Submit extends Component{
         axios.post(`http://localhost:4000/articles`, data).then(response => {
             console.log(response);
             console.log(response.data);
+
         });
 
         Alert.info('Image added')
 
-        // Go to StudentDetails after successful save
+        // Go to Browse after successful save
         history.push('/browse');
     }
 }
